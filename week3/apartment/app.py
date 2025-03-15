@@ -16,13 +16,13 @@ except FileNotFoundError:
 # Laden der Daten
 df_bfs_data = pd.read_csv('bfs_municipality_and_tax_data.csv', sep=',', encoding='utf-8')
 
-# Bereinigung der 'tax_income'-Spalte: Entferne alle Zeichen, die keine Ziffern oder Punkte sind
+# Bereinigung der 'tax_income'-Spalte: Entfernen von Nicht-Ziffern und Leerzeichen
 df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True)
 
-# Konvertiere in float und behandle Fehler
+# Konvertiere 'tax_income' in numerische Werte und setze Fehler auf NaN
 df_bfs_data['tax_income'] = pd.to_numeric(df_bfs_data['tax_income'], errors='coerce')
 
-# Fehlende Werte ersetzen (durch den Median)
+# Fehlende Werte durch den Median ersetzen
 df_bfs_data['tax_income'].fillna(df_bfs_data['tax_income'].median(), inplace=True)
 
 # Laden der Wasser-Distanz-Daten
