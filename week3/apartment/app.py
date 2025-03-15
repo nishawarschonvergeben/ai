@@ -16,17 +16,20 @@ except FileNotFoundError:
 # Laden der Daten
 df_bfs_data = pd.read_csv('bfs_municipality_and_tax_data.csv', sep=',', encoding='utf-8')
 
-# Bereinigung der 'tax_income'-Spalte (entferne Apostrophen, Kommas und alle nicht-numerischen Zeichen)
-df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True).astype(float)
+# Bereinigung der 'tax_income'-Spalte: Entferne alle Zeichen, die keine Ziffern oder Punkte sind
+df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True)
 
-# Zeige die ersten 10 Einträge der 'tax_income'-Spalte, um sicherzustellen, dass die Bereinigung funktioniert
-print(df_bfs_data['tax_income'].head(10))
+# Konvertiere in float und behandle Fehler
+df_bfs_data['tax_income'] = pd.to_numeric(df_bfs_data['tax_income'], errors='coerce')
+
+# Fehlende Werte ersetzen (durch den Median)
+df_bfs_data['tax_income'].fillna(df_bfs_data['tax_income'].median(), inplace=True)
 
 # Laden der Wasser-Distanz-Daten
 df_water_distance = pd.read_csv('bfs_with_water_distance.csv', sep=',', encoding='utf-8')
 df_bfs_data = df_bfs_data.merge(df_water_distance[['bfs_name', 'nearest_water_distance']], on='bfs_name', how='left')
 
-# Fehlende Werte ersetzen
+# Fehlende Werte für 'nearest_water_distance' durch den Median ersetzen
 df_bfs_data['nearest_water_distance'].fillna(df_bfs_data['nearest_water_distance'].median(), inplace=True)
 
 # Features für das Modell
