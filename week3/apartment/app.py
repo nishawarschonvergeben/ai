@@ -15,7 +15,7 @@ except FileNotFoundError:
 
 # Laden der Daten
 df_bfs_data = pd.read_csv('bfs_municipality_and_tax_data.csv', sep=',', encoding='utf-8')
-df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(float)
+df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace("'", "").astype(float)
 
 df_water_distance = pd.read_csv('bfs_with_water_distance.csv', sep=',', encoding='utf-8')
 df_bfs_data = df_bfs_data.merge(df_water_distance[['bfs_name', 'nearest_water_distance']], on='bfs_name', how='left')
