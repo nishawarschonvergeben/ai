@@ -16,22 +16,11 @@ except FileNotFoundError:
 # Laden der Daten
 df_bfs_data = pd.read_csv('bfs_municipality_and_tax_data.csv', sep=',', encoding='utf-8')
 
-# Bereinigung der 'tax_income'-Spalte
+# Bereinigung der 'tax_income'-Spalte (entferne Apostrophen, Kommas und alle nicht-numerischen Zeichen)
 df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True).astype(float)
-# Zeige die ersten 10 Einträge der 'tax_income'-Spalte
+
+# Zeige die ersten 10 Einträge der 'tax_income'-Spalte, um sicherzustellen, dass die Bereinigung funktioniert
 print(df_bfs_data['tax_income'].head(10))
-
-# Überprüfe, ob es noch nicht konvertierte Zeichen gibt
-non_numeric_values = df_bfs_data[~df_bfs_data['tax_income'].str.replace(r"[^\d.]", "", regex=True).str.isnumeric()]
-print(non_numeric_values)
-
-
-# Entferne alle Zeichen, die keine Zahlen oder Punkte sind
-df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True).astype(float)
-
-
-# **Datenbereinigung der 'tax_income'-Spalte**: Entfernen der unerwünschten Zeichen
-df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace("'", "").str.replace(",", "").astype(float)
 
 # Laden der Wasser-Distanz-Daten
 df_water_distance = pd.read_csv('bfs_with_water_distance.csv', sep=',', encoding='utf-8')
