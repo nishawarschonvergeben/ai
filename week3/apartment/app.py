@@ -15,8 +15,25 @@ except FileNotFoundError:
 
 # Laden der Daten
 df_bfs_data = pd.read_csv('bfs_municipality_and_tax_data.csv', sep=',', encoding='utf-8')
-df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace("'", "").astype(float)
 
+# Bereinigung der 'tax_income'-Spalte
+df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True).astype(float)
+# Zeige die ersten 10 Einträge der 'tax_income'-Spalte
+print(df_bfs_data['tax_income'].head(10))
+
+# Überprüfe, ob es noch nicht konvertierte Zeichen gibt
+non_numeric_values = df_bfs_data[~df_bfs_data['tax_income'].str.replace(r"[^\d.]", "", regex=True).str.isnumeric()]
+print(non_numeric_values)
+
+
+# Entferne alle Zeichen, die keine Zahlen oder Punkte sind
+df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace(r"[^\d.]", "", regex=True).astype(float)
+
+
+# **Datenbereinigung der 'tax_income'-Spalte**: Entfernen der unerwünschten Zeichen
+df_bfs_data['tax_income'] = df_bfs_data['tax_income'].astype(str).str.replace("'", "").str.replace(",", "").astype(float)
+
+# Laden der Wasser-Distanz-Daten
 df_water_distance = pd.read_csv('bfs_with_water_distance.csv', sep=',', encoding='utf-8')
 df_bfs_data = df_bfs_data.merge(df_water_distance[['bfs_name', 'nearest_water_distance']], on='bfs_name', how='left')
 
@@ -35,6 +52,7 @@ if random_forest_model.n_features_in_ != len(features):
     random_forest_model = RandomForestRegressor()
     random_forest_model.fit(X, y)
 
+    # Modell speichern
     with open("random_forest_regression.pkl", "wb") as f:
         pickle.dump(random_forest_model, f)
 
